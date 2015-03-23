@@ -31,6 +31,7 @@ class CameraCalibrator {
     
     std::vector<cv::Mat> srcImages;
     cv::Size imageSize;
+    cv::Size boardSize;
     // input points
     std::vector<std::vector<cv::Point3f> > objectPoints;
     std::vector<std::vector<cv::Point2f> > imagePoints;
@@ -60,10 +61,16 @@ public:
     void setCalibrationFlag(bool radial8CoeffEnabled=false, bool tangentialParamEnabled=false);
     // Remove distortion in an image (after calibration)
     cv::Mat undistort(const cv::Mat &image);
+    //
     
     // Getters
     cv::Mat getCameraMatrix() { return cameraMatrix; }
     cv::Mat getDistCoeffs()   { return distCoeffs; }
+    
+    void getObjectPoints(std::vector<cv::Point3f>& obj, int i) { obj = objectPoints[i]; }
+    std::vector<cv::Point3f> getObjectPoints(int i) { return objectPoints[i]; }
+    cv::Size getBoardSize() { return boardSize; }
+    
 };
 
 #endif // CAMERACALIBRATOR_H

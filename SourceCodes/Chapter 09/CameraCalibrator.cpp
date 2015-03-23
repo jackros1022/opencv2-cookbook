@@ -71,6 +71,8 @@ int CameraCalibrator::addChessboardPoints(
             addPoints(imageCorners, objectCorners);
             successes++;
         }
+    
+        this->boardSize = boardSize;
         
         //Draw the corners
         cv::Mat cimage = cv::imread(filelist[i]);
@@ -190,7 +192,7 @@ void  CameraCalibrator::testReprojection() {
         }
         cerr << " --- " << mean/p.size() << endl;
         cv::imshow ("undistorted+reprojection", undistortedImage);
-        cv::waitKey();
+        cv::waitKey(300);
     }
 }
 
