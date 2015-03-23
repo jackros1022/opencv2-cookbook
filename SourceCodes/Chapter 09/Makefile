@@ -11,5 +11,5 @@ LIBS = -L/usr/local/lib \
       -lopencv_ml \
       -lopencv_nonfree
 
-camcalib :CameraCalibrator.h
+camcalib :CameraCalibrator.h $(CALIB_SRCS)
 	clang++ -o $@ $(CALIB_SRCS) $(CFLAGS) $(LIBS)
