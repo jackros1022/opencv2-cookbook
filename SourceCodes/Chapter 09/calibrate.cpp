@@ -70,14 +70,14 @@ void drawCube (cv::Mat& img, cv::Mat_<double>& K, cv::Mat& Rmat, cv::Mat& tvec) 
 
 int main()
 {
-    
+    system("pwd");
     cv::namedWindow("Image");
-    cv::Mat image;
     std::vector<std::string> filelist;
     cv::Size boardSize;
     
     // generate list of chessboard image filename
     for (int i=1; i<=20; i++) {
+        cv::Mat image;
         if (0) {
             boardSize = cv::Size(6,4);
             std::stringstream str;
@@ -100,17 +100,22 @@ int main()
         cv::waitKey(100);
     }
     
+    if (filelist.empty()) {
+        cerr << "File list empty - stop." << endl;
+        return 0;
+    }
+    
     // Create calibrator object
     CameraCalibrator cameraCalibrator;
+    
     // add the corners from the chessboard
     
     std::cerr << "addChessboardPoints()" << std::endl;
     
-    cameraCalibrator.addChessboardPoints(
-                                         filelist,	// filenames of chessboard image
+    cameraCalibrator.addChessboardPoints(filelist,	    // filenames of chessboard image
                                          boardSize);	// size of chessboard
                                                         // calibrate the camera
-                                                        //	cameraCalibrator.setCalibrationFlag(true,true);
+    //	cameraCalibrator.setCalibrationFlag(true,true);
     std::cerr << "now run calibration" << std::endl;
     
     cameraCalibrator.calibrate();
@@ -121,7 +126,7 @@ int main()
     std::cout << cameraMatrix.at<double>(0,0) << " " << cameraMatrix.at<double>(0,1) << " " << cameraMatrix.at<double>(0,2) << std::endl;
     std::cout << cameraMatrix.at<double>(1,0) << " " << cameraMatrix.at<double>(1,1) << " " << cameraMatrix.at<double>(1,2) << std::endl;
     std::cout << cameraMatrix.at<double>(2,0) << " " << cameraMatrix.at<double>(2,1) << " " << cameraMatrix.at<double>(2,2) << std::endl;
-
+    
     
     cameraCalibrator.testReprojection();
     
@@ -129,13 +134,13 @@ int main()
     // Image Undistortion
     for (std::vector<std::string>::iterator it=filelist.begin(); it!=filelist.end(); ++it) {
         std::cerr << "reading: " << *it << std::endl;
-        image = cv::imread(*it);
+        cv::Mat image = cv::imread(*it);
         cv::Mat uImage= cameraCalibrator.undistort(image);
-    
+        
         imshow("Original Image", image);
         imshow("Undistorted Image", uImage);
         
-        cv::waitKey(200);
+        cv::waitKey(1000);
     }
     
     //
@@ -149,11 +154,16 @@ int main()
         cv::cvtColor (undistortedSrc, gray, CV_BGR2GRAY);
         
         std::vector<cv::Point3f> objectCorners = cameraCalibrator.getObjectPoints(0); // obj coord. are all the same 2D pattern
+        
+        // the image points are detected in the undistorted image
+        //
         std::vector<cv::Point2f> imagePoints;
         bool found = cv::findChessboardCorners (gray, cameraCalibrator.getBoardSize(), imagePoints);
         if (!found) {
-            cerr << "corners not found" << endl;
+            cerr << "pose estimation: image corners are not found" << endl;
+            return -1;
         }
+        
         cv::cornerSubPix(gray, imagePoints, cv::Size(5,5), cv::Size(-1,-1),
                          cv::TermCriteria(cv::TermCriteria::MAX_ITER +
                                           cv::TermCriteria::EPS,
@@ -161,21 +171,31 @@ int main()
                                           0.1)      // min accuracy
                          );
         if (imagePoints.size() != boardSize.area()) {
-            cerr << "the number of corners not match" << endl;
+            cerr << "  - the number of corners not match" << endl;
+            return -1;
         }
+        
         cv::Mat disp=undistortedSrc.clone();
         cv::drawChessboardCorners (disp, cameraCalibrator.getBoardSize(), imagePoints, found);
         cv::imshow ("Pose Estimation: Corner Detection Result", disp);
         
+        //
         // now compute the pose: R, T
+        //
         cv::Mat_<double> K = cameraCalibrator.getCameraMatrix();
         cv::Mat rvec, tvec;
         cv::solvePnP (objectCorners, imagePoints,
-                      K, cv::Mat() /* distcoeff */,
-                      rvec, tvec, false, CV_ITERATIVE);
+                      K,
+                      cv::Mat(),   // distcoeff
+                      rvec, tvec,  // outputs
+                      false,       // bool useExtrinsicGuess
+                      CV_ITERATIVE);
+
         cv::Mat Rmat;
         cv::Rodrigues (rvec, Rmat);
-
+        
+        // calculate mean re-projection error
+        //
         double mean = 0.; // mean of L2 distance
         for (int k=0; k<objectCorners.size(); k++) {
             // rotation
@@ -185,6 +205,7 @@ int main()
             Xc = Xc + tvec;
             // perspective projection
             Xc /= Xc(2);
+          
             // no radial distortion
             double u = K(0,0)*Xc(0) + K(0,2);
             double v = K(1,1)*Xc(1) + K(1,2);
@@ -195,19 +216,24 @@ int main()
             //cerr << "err = " << err << endl;
             mean += err;
             
-            cv::circle (undistortedSrc, cv::Point2f(u, v), 3, cv::Scalar(0,155,0), 1);
+            cv::circle (undistortedSrc, cv::Point2f(u, v), 7, cv::Scalar(0,255,255), 2);
+            cv::circle (undistortedSrc, cv::Point2f(u, v), 3, cv::Scalar(0,  0,255), 2);
         }
         cerr << "- mean of L2 erros = " << mean / objectCorners.size() << endl;
         
+        // AR ?
+        //
         drawCube (undistortedSrc, K, Rmat, tvec);
+        
+        //
         cv::imshow ("Pose estimation, reprojection", undistortedSrc);
-
-
-	cv::FileStorage fs("chessboards2/test.yaml", cv::FileStorage::WRITE);
-	fs << "K" << K;
-	fs << "rvec" << rvec;
-	fs << "tvec" << tvec;
-	fs << "image" << testImageFileName;
+        
+        cv::FileStorage fs("chessboards2/test.yaml", cv::FileStorage::WRITE);
+        fs << "K" << K;
+        fs << "rvec" << rvec;
+        fs << "tvec" << tvec;
+        fs << "image" << testImageFileName;
+        cerr << "! Now, apply this augmentation to a video of a chessboard." << endl;
     }
     cv::waitKey(10000);
     return 0;

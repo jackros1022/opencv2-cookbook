@@ -23,6 +23,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/nonfree/nonfree.hpp> // Surf is in non-free
 
 class RobustMatcher {
     
@@ -39,8 +40,7 @@ private:
     
 public:
     
-    RobustMatcher() : ratio(0.65f), refineF(true), confidence(0.99), distance(3.0) {	  
-        
+    RobustMatcher() : ratio(0.65f), refineF(true), confidence(0.99), distance(3.0) {
         // SURF is the default feature
         detector= new cv::SurfFeatureDetector();
         extractor= new cv::SurfDescriptorExtractor();
@@ -254,7 +254,8 @@ public:
 		// 2. Match the two image descriptors
         
 		// Construction of the matcher 
-		cv::BruteForceMatcher<cv::L2<float> > matcher;
+        //cv::BruteForceMatcher<cv::L2<float> > matcher;
+        cv::BFMatcher matcher(cv::NORM_L2);
         
 		// from image 1 to image 2
 		// based on k nearest neighbours (with k=2)
