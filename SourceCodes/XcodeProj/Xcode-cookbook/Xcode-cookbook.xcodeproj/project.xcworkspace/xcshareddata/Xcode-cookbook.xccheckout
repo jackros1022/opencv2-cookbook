@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>03FC0687-6C6F-4FBD-837C-190F938CAA8B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Xcode-cookbook</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>5937704579C586F3B6BED99FD46138346E18A2CE</key>
+		<string>https://github.com/yongduek/opencv2-cookbook.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SourceCodes/XcodeProj/Xcode-cookbook/Xcode-cookbook.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>5937704579C586F3B6BED99FD46138346E18A2CE</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/yongduek/opencv2-cookbook.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>5937704579C586F3B6BED99FD46138346E18A2CE</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>5937704579C586F3B6BED99FD46138346E18A2CE</string>
+			<key>IDESourceControlWCCName</key>
+			<string>opencv2-cookbook</string>
+		</dict>
+	</array>
+</dict>
+</plist>

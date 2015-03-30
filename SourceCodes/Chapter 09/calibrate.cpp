@@ -142,6 +142,7 @@ int main()
     // pose estimation test
     //
     if (IMAGE_DATA) {
+        std::string testImageFileName = "chessboards2/test.jpg";
         cv::Mat srcI = cv::imread ("chessboards2/test.jpg");
         cv::Mat undistortedSrc = cameraCalibrator.undistort (srcI); // distCoeff = 0, from now on.
         cv::Mat gray;
@@ -200,7 +201,14 @@ int main()
         
         drawCube (undistortedSrc, K, Rmat, tvec);
         cv::imshow ("Pose estimation, reprojection", undistortedSrc);
+
+
+	cv::FileStorage fs("chessboards2/test.yaml", cv::FileStorage::WRITE);
+	fs << "K" << K;
+	fs << "rvec" << rvec;
+	fs << "tvec" << tvec;
+	fs << "image" << testImageFileName;
     }
-    cv::waitKey();
+    cv::waitKey(10000);
     return 0;
 }
