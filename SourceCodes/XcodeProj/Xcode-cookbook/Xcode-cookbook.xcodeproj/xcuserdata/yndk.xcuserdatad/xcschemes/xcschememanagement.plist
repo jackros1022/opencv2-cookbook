@@ -14,9 +14,29 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
+		<key>chapter09-homography.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
+		<key>chapter09.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>B019164D1AC956920042D89B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B019165D1AC957040042D89B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>B0F2B2EE1AC944B80048240A</key>
 		<dict>
 			<key>primary</key>
